@@ -120,7 +120,7 @@ textarea {
   padding: 9px;
   border: 1px solid #cbd5dc;
   border-radius: 6px;
-  background: #fbfcfd;
+  background: #ffffff;
   color: #172026;
   outline: none;
   resize: vertical;
@@ -235,7 +235,7 @@ button:disabled {
 .download-button {
   position: absolute;
   top: 6px;
-  right: 6px;
+  right: 40px;
   width: 28px;
   min-width: 28px;
   min-height: 28px;
@@ -244,6 +244,21 @@ button:disabled {
   background: rgba(255, 255, 255, 0.92);
   color: #172026;
   font-size: 16px;
+  line-height: 1;
+}
+
+.remove-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border-color: rgba(185, 198, 206, 0.8);
+  background: rgba(255, 255, 255, 0.92);
+  color: #7a2730;
+  font-size: 18px;
   line-height: 1;
 }
 

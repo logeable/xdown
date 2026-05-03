@@ -27,6 +27,7 @@ async function init() {
   elements.copy.addEventListener("click", copyPayload);
   elements.downloadText.addEventListener("click", downloadText);
   elements.downloadAll.addEventListener("click", downloadAll);
+  elements.text.addEventListener("input", syncEditedText);
 
   await extract();
 }
@@ -189,6 +190,7 @@ function renderPayload(payload) {
         image.url,
         getMediaFilename(payload, "image", index, image.url)
       ));
+      item.append(createRemoveButton("image", index));
       elements.images.append(item);
     });
   }
@@ -239,8 +241,55 @@ function renderPayload(payload) {
       ));
     }
 
+    item.append(createRemoveButton("video", index));
     elements.videos.append(item);
   });
+}
+
+function syncEditedText() {
+  if (!state.payload) {
+    return;
+  }
+
+  state.payload = {
+    ...state.payload,
+    text: elements.text.value
+  };
+  updateActionState();
+}
+
+function createRemoveButton(kind, index) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "remove-button";
+  button.title = "删除";
+  button.textContent = "×";
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    removeMedia(kind, index);
+  });
+
+  return button;
+}
+
+function removeMedia(kind, index) {
+  if (!state.payload) {
+    return;
+  }
+
+  const key = kind === "image" ? "images" : "videos";
+  const nextItems = [...(state.payload[key] || [])];
+  nextItems.splice(index, 1);
+
+  state.payload = {
+    ...state.payload,
+    [key]: nextItems
+  };
+
+  renderPayload(state.payload);
+  updateActionState();
+  setStatus(kind === "image" ? "已删除图片" : "已删除视频");
 }
 
 function createDownloadButton(url, filename) {

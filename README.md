@@ -78,4 +78,4 @@ Authorization: Bearer <token>
 ```
 
 ---
-[catchmeta.com](catchmeta.com) — curated, ready-to-use AI prompts for common generation tasks
+Built with support from [CatchMeta](https://catchmeta.com), a practical prompt library for AI workflows.

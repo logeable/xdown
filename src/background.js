@@ -47,7 +47,7 @@ async function setupActionRules() {
 
 async function updateAllTabs() {
   const tabs = await chrome.tabs.query({});
-  await Promise.all(tabs.map((tab) => updateActionForTab(tab.id, tab)));
+  await Promise.allSettled(tabs.map((tab) => updateActionForTab(tab.id, tab)));
 }
 
 async function updateActionForTab(tabId, tab) {
@@ -59,16 +59,24 @@ async function updateActionForTab(tabId, tab) {
   const supported = isSupportedPage(targetTab?.url);
 
   if (supported) {
-    await chrome.action.enable(tabId);
-    await chrome.action.setBadgeText({ tabId, text: "X" });
-    await chrome.action.setBadgeBackgroundColor({ tabId, color: "#247DB8" });
-    await chrome.action.setTitle({ tabId, title: "X帖子提取：可用" });
+    await safeActionCall(() => chrome.action.enable(tabId));
+    await safeActionCall(() => chrome.action.setBadgeText({ tabId, text: "X" }));
+    await safeActionCall(() => chrome.action.setBadgeBackgroundColor({ tabId, color: "#247DB8" }));
+    await safeActionCall(() => chrome.action.setTitle({ tabId, title: "X帖子提取：可用" }));
     return;
   }
 
-  await chrome.action.disable(tabId);
-  await chrome.action.setBadgeText({ tabId, text: "" });
-  await chrome.action.setTitle({ tabId, title: "X帖子提取：仅支持 X 页面" });
+  await safeActionCall(() => chrome.action.disable(tabId));
+  await safeActionCall(() => chrome.action.setBadgeText({ tabId, text: "" }));
+  await safeActionCall(() => chrome.action.setTitle({ tabId, title: "X帖子提取：仅支持 X 页面" }));
+}
+
+async function safeActionCall(call) {
+  try {
+    await call();
+  } catch (_error) {
+    // Tab lifecycle events can race with action updates when a tab closes or navigates.
+  }
 }
 
 function isSupportedPage(url) {

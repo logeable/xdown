@@ -146,6 +146,10 @@
     const images = [];
 
     for (const img of article.querySelectorAll("img")) {
+      if (!belongsToPrimaryTweetMedia(img)) {
+        continue;
+      }
+
       const rawUrl = img.currentSrc || img.src;
 
       if (!rawUrl || !TWITTER_IMAGE_RE.test(rawUrl)) {
@@ -175,6 +179,10 @@
     const bestVideoUrls = getBestVideoUrlsByMedia(getKnownVideoUrls());
 
     for (const video of article.querySelectorAll("video")) {
+      if (!belongsToPrimaryTweetMedia(video)) {
+        continue;
+      }
+
       const rawUrl = getVideoElementUrl(video);
       const url = isUsableVideoUrl(rawUrl) ? rawUrl : getMatchingVideoUrl(video, bestVideoUrls);
       const posterUrl = getVideoPosterUrl(video);
@@ -197,6 +205,17 @@
     }
 
     return videos;
+  }
+
+  function belongsToPrimaryTweetMedia(element) {
+    const currentStatusId = getStatusId(window.location.href);
+    const statusLink = element.closest('a[href*="/status/"]');
+
+    if (!currentStatusId || !statusLink) {
+      return true;
+    }
+
+    return getStatusId(statusLink.href) === currentStatusId;
   }
 
   function getMatchingVideoUrl(video, urls) {
@@ -413,13 +432,32 @@
 
   function getCanonicalStatusUrl() {
     const statusId = getStatusId(window.location.href);
-    const authorLink = document.querySelector(`a[href*="/status/${statusId}"]`);
 
-    if (!statusId || !authorLink) {
+    if (!statusId) {
       return window.location.href.split("?")[0];
     }
 
-    return new URL(authorLink.getAttribute("href"), window.location.origin).href.split("?")[0];
+    const authorPath = getStatusAuthorPath(statusId);
+    if (!authorPath) {
+      return window.location.href.split("?")[0].replace(new RegExp(`(/status/${statusId}).*$`), "$1");
+    }
+
+    return `${window.location.origin}/${authorPath}/status/${statusId}`;
+  }
+
+  function getStatusAuthorPath(statusId) {
+    const currentPathMatch = window.location.pathname.match(new RegExp(`^/([^/]+)/status/${statusId}`));
+    if (currentPathMatch?.[1]) {
+      return currentPathMatch[1];
+    }
+
+    const statusLink = document.querySelector(`a[href*="/status/${statusId}"]`);
+    if (!statusLink) {
+      return "";
+    }
+
+    const parsed = new URL(statusLink.getAttribute("href"), window.location.origin);
+    return parsed.pathname.match(new RegExp(`^/([^/]+)/status/${statusId}`))?.[1] || "";
   }
 
   function getStatusId(url) {

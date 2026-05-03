@@ -2,6 +2,10 @@
 
 Chrome extension for extracting text, images, and videos from X post detail pages.
 
+## Preview
+
+![X帖子提取 popup preview](docs/popup-preview.png)
+
 ## Install
 
 1. Open `chrome://extensions`.

@@ -3,7 +3,21 @@ const DEFAULT_SETTINGS = {
   token: ""
 };
 
-chrome.runtime.onInstalled.addListener(setupActionRules);
+const SUPPORTED_HOSTS = new Set(["x.com", "twitter.com"]);
+
+chrome.runtime.onInstalled.addListener(async () => {
+  await setupActionRules();
+  await updateAllTabs();
+});
+chrome.runtime.onStartup.addListener(updateAllTabs);
+chrome.tabs.onActivated.addListener(({ tabId }) => {
+  updateActionForTab(tabId);
+});
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.url || changeInfo.status === "complete") {
+    updateActionForTab(tabId, tab);
+  }
+});
 
 async function setupActionRules() {
   await chrome.action.disable();
@@ -29,6 +43,41 @@ async function setupActionRules() {
       ]
     }
   ]);
+}
+
+async function updateAllTabs() {
+  const tabs = await chrome.tabs.query({});
+  await Promise.all(tabs.map((tab) => updateActionForTab(tab.id, tab)));
+}
+
+async function updateActionForTab(tabId, tab) {
+  if (!tabId) {
+    return;
+  }
+
+  const targetTab = tab || await chrome.tabs.get(tabId).catch(() => null);
+  const supported = isSupportedPage(targetTab?.url);
+
+  if (supported) {
+    await chrome.action.enable(tabId);
+    await chrome.action.setBadgeText({ tabId, text: "X" });
+    await chrome.action.setBadgeBackgroundColor({ tabId, color: "#247DB8" });
+    await chrome.action.setTitle({ tabId, title: "X帖子提取：可用" });
+    return;
+  }
+
+  await chrome.action.disable(tabId);
+  await chrome.action.setBadgeText({ tabId, text: "" });
+  await chrome.action.setTitle({ tabId, title: "X帖子提取：仅支持 X 页面" });
+}
+
+function isSupportedPage(url) {
+  try {
+    const parsed = new URL(url || "");
+    return parsed.protocol === "https:" && SUPPORTED_HOSTS.has(parsed.hostname);
+  } catch (_error) {
+    return false;
+  }
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

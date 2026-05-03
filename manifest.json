@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "X帖子提取",
+  "description": "Extract text, images, and videos from X post pages.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "X帖子提取",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "src/interceptor.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "src/content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*",
+    "https://pbs.twimg.com/*",
+    "https://video.twimg.com/*"
+  ],
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "downloads",
+    "scripting",
+    "storage"
+  ]
+}

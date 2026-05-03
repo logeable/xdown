@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>X帖子提取配置</title>
+    <link rel="stylesheet" href="src/options.css">
+  </head>
+  <body>
+    <main class="settings">
+      <header>
+        <h1>X帖子提取</h1>
+        <p id="status">配置推送服务</p>
+      </header>
+
+      <section class="panel">
+        <label for="endpoint">推送地址</label>
+        <input id="endpoint" type="url" placeholder="https://example.com/api/x-posts">
+
+        <label for="token">Token</label>
+        <input id="token" type="password" placeholder="可选">
+
+        <div class="actions">
+          <button id="save" type="button">保存配置</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="src/options.js"></script>
+  </body>
+</html>

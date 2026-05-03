@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>X帖子提取</title>
+    <link rel="stylesheet" href="src/popup.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div class="brand">
+          <h1>X帖子提取</h1>
+          <p id="status" class="status">等待抓取</p>
+        </div>
+        <div class="toolbar">
+          <button id="extract" type="button" class="icon-button" title="抓取当前帖子">↻</button>
+          <button id="options" type="button" class="icon-button" title="配置">⚙</button>
+        </div>
+      </header>
+
+      <section class="actions-panel" aria-label="操作">
+        <button id="downloadAll" type="button" class="primary-action">下载全部</button>
+        <button id="copy" type="button">复制 JSON</button>
+        <button id="send" type="button">推送</button>
+      </section>
+
+      <section class="panel text-panel">
+        <div class="section-title">
+          <h2>正文</h2>
+          <button id="downloadText" type="button" class="section-action">下载正文</button>
+        </div>
+        <textarea id="text" readonly placeholder="打开 X 帖子详情页后点击抓取"></textarea>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>图片</h2>
+          <span id="imageCount" class="count">0</span>
+        </div>
+        <div id="images" class="images"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>视频</h2>
+          <span id="videoCount" class="count">0</span>
+        </div>
+        <div id="videos" class="videos"></div>
+      </section>
+    </main>
+    <script type="module" src="src/popup.js"></script>
+  </body>
+</html>

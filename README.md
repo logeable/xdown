@@ -76,3 +76,6 @@ If a token is configured, it is sent as:
 ```http
 Authorization: Bearer <token>
 ```
+
+---
+[catchmeta.com](catchmeta.com) — curated, ready-to-use AI prompts for common generation tasks
